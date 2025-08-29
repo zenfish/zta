@@ -20,6 +20,7 @@ ZTA_ShowTooltip     = ZTA_ShowTooltip       or function() end
 ZTA_SavePosition    = ZTA_SavePosition      or function() end
 ZTA_OnDragStart     = ZTA_OnDragStart       or function() end
 ZTA_OnDragStop      = ZTA_OnDragStop        or function() end
+ZTA_CancelScan      = ZTA_CancelScan        or function() end
 
 -- ============================================================================
 -- SAVED VARIABLES (must be global)
@@ -413,6 +414,28 @@ function ZTA_OnDragStop()
     if icon then
         icon:StopMovingOrSizing()
         ZTA_SavePosition()
+    end
+end
+
+function ZTA_CancelScan()
+    if scanInProgress then
+        ZTA_Print("Auction scan cancelled.")
+        scanInProgress = false
+        scanStartTime = nil
+        currentPage = 0
+        totalPages = 0
+        
+        -- Restore original function
+        if originalCanSendAuctionQuery then
+            CanSendAuctionQuery = originalCanSendAuctionQuery
+            originalCanSendAuctionQuery = nil
+        end
+        
+        -- Reset icon and hide progress window
+        getglobal("ZTAIconText"):SetText(ICON_STATE_IDLE)
+        getglobal("ZTAProgressFrame"):Hide()
+    else
+        ZTA_Print("No scan in progress.")
     end
 end
 

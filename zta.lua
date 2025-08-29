@@ -8,6 +8,21 @@ local ZTA_OnDragStart     = local function() end
 local ZTA_OnDragStop      = local function() end
 local ZTA_CancelScan      = local function() end
 
+local taunts = {"I'm a button.", "Quit clicking me.", "That's enough.", "Stop it!", "I'm leaving!"};
+local widget = CreateFrame("Button", "TauntingButton", UIParent, "UIPanelButtonTemplate");
+widget:SetWidth(200); widget:SetHeight(24); widget:SetPoint("CENTER");
+widget:RegisterForClicks("AnyUp");
+widget:SetScript("OnClick", function (self, button, down)
+     self:SetID((self:GetID() or 1) + 1);
+     if taunts[self:GetID()] then
+        self:SetText(taunts[self:GetID()]);
+     else
+        self:Hide();
+     end
+end);
+
+
+
 --
 -- Create a movable button
 --

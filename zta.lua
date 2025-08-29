@@ -10,15 +10,17 @@
 
 -- CRITICAL: Initialize empty functions IMMEDIATELY to prevent XML errors
 -- These will be redefined later with actual functionality
-ZTA_Print = ZTA_Print or function() end
-ZTA_OnLoad = ZTA_OnLoad or function() end
-ZTA_OnClick = ZTA_OnClick or function() end
-ZTA_ShowTooltip = ZTA_ShowTooltip or function() end
-ZTA_SavePosition = ZTA_SavePosition or function() end
-ZTA_CancelScan = ZTA_CancelScan or function() end
-ZTA_StartScan = ZTA_StartScan or function() end
-ZTA_StopScan = ZTA_StopScan or function() end
-ZTA_RestorePosition = ZTA_RestorePosition or function() end
+ZTA_Print           = ZTA_Print             or function() end
+ZTA_OnLoad          = ZTA_OnLoad            or function() end
+ZTA_OnClick         = ZTA_OnClick           or function() end
+ZTA_ShowTooltip     = ZTA_ShowTooltip       or function() end
+ZTA_SavePosition    = ZTA_SavePosition      or function() end
+ZTA_CancelScan      = ZTA_CancelScan        or function() end
+ZTA_StartScan       = ZTA_StartScan         or function() end
+ZTA_StopScan        = ZTA_StopScan          or function() end
+ZTA_RestorePosition = ZTA_RestorePosition   or function() end
+ZTA_OnDragStart     = ZTA_OnDragStart       or function() end
+ZTA_OnDragStop      = ZTA_OnDragStop        or function() end
 
 -- IMPORTANT: All XML-called functions must be defined FIRST before any variables
 -- This is required for WoW Vanilla addon loading order
@@ -41,28 +43,25 @@ function ZTA_RestorePosition()
 end
 
 function ZTA_OnLoad()
-    -- Initialize the addon  
-    this:RegisterForDrag("LeftButton")
-    this:SetMovable(true)
-    this:EnableMouse(true)
-    
-    -- Debug: Show what frame this is
-    local frameName = this:GetName() or "Unknown"
-    
-    -- Set initial icon state - try multiple ways to ensure it works
-    local buttonText = getglobal(frameName.."Text")
-    if buttonText then
-        buttonText:SetText("$")
-        ZTA_Print("Set text via " .. frameName .. "Text")
-    else
-        ZTA_Print("Could not find " .. frameName .. "Text")
+    -- Get the icon frame directly
+    local icon = getglobal("ZTAIcon")
+    if not icon then
+        ZTA_Print("ERROR: Could not find ZTAIcon frame")
+        return
     end
     
-    -- Alternative method
-    local iconText = getglobal("ZTAIconText")  
+    -- Initialize the addon  
+    icon:RegisterForDrag("LeftButton")
+    icon:SetMovable(true)
+    icon:EnableMouse(true)
+    
+    -- Set initial icon state - try multiple ways to ensure it works
+    local iconText = getglobal("ZTAIconText")
     if iconText then
         iconText:SetText("$")
-        ZTA_Print("Set text via ZTAIconText")
+        ZTA_Print("Set text via ZTAIconText - SUCCESS")
+    else
+        ZTA_Print("Could not find ZTAIconText")
     end
     
     -- Restore position if available
@@ -82,7 +81,10 @@ function ZTA_OnClick()
 end
 
 function ZTA_ShowTooltip()
-    GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+    local icon = getglobal("ZTAIcon")
+    if not icon then return end
+    
+    GameTooltip:SetOwner(icon, "ANCHOR_RIGHT")
     GameTooltip:ClearLines()
     
     if scanInProgress then
@@ -122,6 +124,21 @@ function ZTA_SavePosition()
     if icon and ZTA_DB then
         local point, _, _, x, y = icon:GetPoint()
         ZTA_DB.iconPosition = { point = point, x = x, y = y }
+    end
+end
+
+function ZTA_OnDragStart()
+    local icon = getglobal("ZTAIcon")
+    if icon then
+        icon:StartMoving()
+    end
+end
+
+function ZTA_OnDragStop()
+    local icon = getglobal("ZTAIcon")
+    if icon then
+        icon:StopMovingOrSizing()
+        ZTA_SavePosition()
     end
 end
 

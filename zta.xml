@@ -36,11 +36,10 @@
         ZTA_OnClick();
       </OnClick>
       <OnDragStart>
-        this:StartMoving();
+        ZTA_OnDragStart();
       </OnDragStart>
       <OnDragStop>
-        this:StopMovingOrSizing();
-        ZTA_SavePosition();
+        ZTA_OnDragStop();
       </OnDragStop>
       <OnEnter>
         ZTA_ShowTooltip();

@@ -2,8 +2,8 @@
 ## Notes: A simple auction house scanner with moveable icon and progress tracking  
 ## Interface: 11200
 ## SavedVariables: ZTA_DB
-## Version: 1.0.11
+## Version: 1.0.8
 
-zta.xml
 zta.lua
+zta.xml
 

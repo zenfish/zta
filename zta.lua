@@ -25,13 +25,13 @@
 -- IMPORTANT: All XML-called functions must be defined FIRST before any variables
 -- This is required for WoW Vanilla addon loading order
 
-function ZTA_Print(msg)
+local function ZTA_Print(msg)
     if DEFAULT_CHAT_FRAME then
         DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00[ZTA]|r " .. msg)
     end
 end
 
-function ZTA_RestorePosition()
+local function ZTA_RestorePosition()
     if ZTA_DB and ZTA_DB.iconPosition then
         local pos = ZTA_DB.iconPosition
         local icon = getglobal("ZTAIcon")
@@ -42,7 +42,7 @@ function ZTA_RestorePosition()
     end
 end
 
-function ZTA_OnLoad()
+local function ZTA_OnLoad()
     -- Get the icon frame directly
     local icon = getglobal("ZTAIcon")
     if not icon then
@@ -70,7 +70,7 @@ function ZTA_OnLoad()
     ZTA_Print("ZTA loaded. Click the $ icon at an auctioneer to start scanning.")
 end
 
-function ZTA_OnClick()
+local function ZTA_OnClick()
     if scanInProgress then
         -- Currently scanning, this acts as cancel
         ZTA_CancelScan()
@@ -80,7 +80,7 @@ function ZTA_OnClick()
     end
 end
 
-function ZTA_ShowTooltip()
+local function ZTA_ShowTooltip()
     local icon = getglobal("ZTAIcon")
     if not icon then return end
     
@@ -119,7 +119,7 @@ function ZTA_ShowTooltip()
     GameTooltip:Show()
 end
 
-function ZTA_SavePosition()
+local function ZTA_SavePosition()
     local icon = getglobal("ZTAIcon")
     if icon and ZTA_DB then
         local point, _, _, x, y = icon:GetPoint()
@@ -127,14 +127,14 @@ function ZTA_SavePosition()
     end
 end
 
-function ZTA_OnDragStart()
+local function ZTA_OnDragStart()
     local icon = getglobal("ZTAIcon")
     if icon then
         icon:StartMoving()
     end
 end
 
-function ZTA_OnDragStop()
+local function ZTA_OnDragStop()
     local icon = getglobal("ZTAIcon")
     if icon then
         icon:StopMovingOrSizing()
@@ -142,12 +142,12 @@ function ZTA_OnDragStop()
     end
 end
 
-function ZTA_CancelScan()
+local function ZTA_CancelScan()
     ZTA_Print("Auction scan cancelled.")
     ZTA_StopScan()
 end
 
-function ZTA_StartScan()
+local function ZTA_StartScan()
     -- Check if we can start a scan
     if not AuctionFrame or not AuctionFrame:IsVisible() then
         ZTA_Print("You must be at an auctioneer to start scanning.")
@@ -181,7 +181,7 @@ function ZTA_StartScan()
     getglobal("ZTAIconText"):SetText("X")
 end
 
-function ZTA_StopScan()
+local function ZTA_StopScan()
     scanInProgress = false
     scanStartTime = nil
     currentPage = 0
@@ -224,7 +224,7 @@ local ICON_STATE_SCANNING = "X"
 -- Hook variables for original functions
 local originalCanSendAuctionQuery = nil
 
-function ZTA_OnClick()
+local function ZTA_OnClick()
     if scanInProgress then
         -- Currently scanning, this acts as cancel
         ZTA_CancelScan()
@@ -234,12 +234,12 @@ function ZTA_OnClick()
     end
 end
 
-function ZTA_CancelScan()
+local function ZTA_CancelScan()
     ZTA_Print("Auction scan cancelled.")
     ZTA_StopScan()
 end
 
-function ZTA_OnLoad()
+local function ZTA_OnLoad()
     -- Initialize the addon  
     this:RegisterForDrag("LeftButton")
     this:SetMovable(true)
@@ -254,7 +254,7 @@ function ZTA_OnLoad()
     ZTA_Print("ZTA loaded. Click the $ icon at an auctioneer to start scanning.")
 end
 
-function ZTA_OnEvent()
+local function ZTA_OnEvent()
     if event == "ADDON_LOADED" and arg1 == "zta" then
         -- Addon has loaded, initialize saved variables
         if not ZTA_DB then
@@ -282,7 +282,7 @@ function ZTA_OnEvent()
     end
 end
 
-function ZTA_OnClick()
+local function ZTA_OnClick()
     if scanInProgress then
         -- Currently scanning, this acts as cancel
         ZTA_CancelScan()
@@ -292,7 +292,7 @@ function ZTA_OnClick()
     end
 end
 
-function ZTA_StartScan()
+local function ZTA_StartScan()
     -- Check if we can start a scan
     if not AuctionFrame or not AuctionFrame:IsVisible() then
         ZTA_Print("You must be at an auctioneer to start scanning.")
@@ -333,7 +333,7 @@ function ZTA_StartScan()
     getglobal("ZTAIconText"):SetText(ICON_STATE_SCANNING)
 end
 
-function ZTA_CanSendAuctionQuery()
+local function ZTA_CanSendAuctionQuery()
     -- Custom query control during scanning
     if scanInProgress then
         local numBatchAuctions, totalAuctions = GetNumAuctionItems("list")
@@ -375,7 +375,7 @@ function ZTA_CanSendAuctionQuery()
     return originalCanSendAuctionQuery()
 end
 
-function ZTA_ProcessCurrentPage()
+local function ZTA_ProcessCurrentPage()
     local numBatchAuctions, totalAuctions = GetNumAuctionItems("list")
     
     if numBatchAuctions > 0 then
@@ -407,12 +407,12 @@ function ZTA_ProcessCurrentPage()
     end
 end
 
-function ZTA_ProcessAuctionData()
+local function ZTA_ProcessAuctionData()
     -- This is called when AUCTION_ITEM_LIST_UPDATE fires
     -- The actual processing is handled in CanSendAuctionQuery hook
 end
 
-function ZTA_UpdateProgress()
+local function ZTA_UpdateProgress()
     local progressFrame = getglobal("ZTAProgressFrame")
     if not progressFrame or not progressFrame:IsVisible() then
         return
@@ -453,7 +453,7 @@ function ZTA_UpdateProgress()
     end
 end
 
-function ZTA_SecondsToTime(seconds)
+local function ZTA_SecondsToTime(seconds)
     local hours = math.floor(seconds / 3600)
     local minutes = math.floor((seconds % 3600) / 60)
     local secs = math.floor(seconds % 60)
@@ -467,7 +467,7 @@ function ZTA_SecondsToTime(seconds)
     end
 end
 
-function ZTA_CompleteScan()
+local function ZTA_CompleteScan()
     -- Scan completed successfully
     ZTA_StopScan()
     
@@ -489,12 +489,12 @@ function ZTA_CompleteScan()
     ZTA_Print("Scan completed! Found " .. itemsScanned .. " auction items. Data saved to database.")
 end
 
-function ZTA_CancelScan()
+local function ZTA_CancelScan()
     ZTA_Print("Auction scan cancelled.")
     ZTA_StopScan()
 end
 
-function ZTA_StopScan()
+local function ZTA_StopScan()
     scanInProgress = false
     scanStartTime = nil
     currentPage = 0
@@ -513,7 +513,7 @@ function ZTA_StopScan()
     getglobal("ZTAProgressFrame"):Hide()
 end
 
-function ZTA_RestorePosition()
+local function ZTA_RestorePosition()
     if ZTA_DB.iconPosition then
         local pos = ZTA_DB.iconPosition
         local icon = getglobal("ZTAIcon")
@@ -527,7 +527,7 @@ end
 -- Slash command support
 SLASH_ZTA1 = "/zta"
 
-function SlashCmdList.ZTA(msg)
+local function SlashCmdList.ZTA(msg)
     msg = string.lower(msg or "")
     
     if msg == "scan" then

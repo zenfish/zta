@@ -12,15 +12,6 @@
 -- GLOBAL FUNCTIONS (only those called by XML)
 -- ============================================================================
 
--- CRITICAL: Initialize empty functions IMMEDIATELY to prevent XML errors
-local ZTA_Print           = local ZTA_Print             or function() end
-local ZTA_OnLoad          = local ZTA_OnLoad            or function() end
-local ZTA_OnClick         = local ZTA_OnClick           or function() end
-local ZTA_ShowTooltip     = local ZTA_ShowTooltip       or function() end
-local ZTA_SavePosition    = local ZTA_SavePosition      or function() end
-local ZTA_OnDragStart     = local ZTA_OnDragStart       or function() end
-local ZTA_OnDragStop      = local ZTA_OnDragStop        or function() end
-
 -- ============================================================================
 -- SAVED VARIABLES (must be global)
 -- ============================================================================

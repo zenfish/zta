@@ -8,6 +8,27 @@ local ZTA_OnDragStart     = local function() end
 local ZTA_OnDragStop      = local function() end
 local ZTA_CancelScan      = local function() end
 
+--
+-- Create a movable button
+--
+local zbutton = CreateFrame("Button", "zAuct", UIParent, "UIPanelButtonTemplate")
+zbutton:SetSize(100, 50) -- Set the button size (width, height)
+zbutton:SetPoint("CENTER") -- Default position in the center of the screen
+zbutton:SetMovable(true) -- Make the button movable
+zbutton:EnableMouse(true)
+zbutton:RegisterForDrag("LeftButton")
+zbutton:SetScript("OnDragStart", button.StartMoving)
+zbutton:SetScript("OnDragStop", function(self)
+    self:StopMovingOrSizing()
+    -- Save the new position to the saved variables (persistent storage)
+    local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
+    SpeedButtonPosition = {point, relativePoint, xOfs, yOfs}
+end)
+
+zbutton:SetScript("OnEnter", ZTA_OnEnter)
+zbutton:SetScript("OnClick", ZTA_OnClick)
+
+
 --[[
     ZTA - A lightweight auction house scanner for WoW Vanilla
     Features:
@@ -274,22 +295,22 @@ end
 
 local function ZTA_OnLoad()
     -- Get the icon frame directly
-    local icon = getglobal("ZTAIcon")
-    if not icon then
-        ZTA_Print("ERROR: Could not find ZTAIcon frame")
-        return
-    end
+--  local icon = getglobal("ZTAIcon")
+--  if not icon then
+--      ZTA_Print("ERROR: Could not find ZTAIcon frame")
+--      return
+--  end
     
     -- Initialize the addon  
-    icon:RegisterForDrag("LeftButton")
-    icon:SetMovable(true)
-    icon:EnableMouse(true)
+--  icon:RegisterForDrag("LeftButton")
+--  icon:SetMovable(true)
+--  icon:EnableMouse(true)
     
     -- Set initial icon state
-    local iconText = getglobal("ZTAIconText")
-    if iconText then
-        iconText:SetText(ICON_STATE_IDLE)
-    end
+--  local iconText = getglobal("ZTAIconText")
+--  if iconText then
+--      iconText:SetText(ICON_STATE_IDLE)
+--  end
     
     ZTA_Print("ZTA loaded. Click the $ icon at an auctioneer to start scanning.")
 end
@@ -483,9 +504,6 @@ end
 local frame = CreateFrame("Frame", "ZTAFrame")
 
 -- Set the scripts for the frame
-frame:SetScript("OnEnter", ZTA_OnEnter)
-frame:SetScript("OnClick", ZTA_OnClick)
-
 frame:SetScript("OnEvent", onEvent)
 frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("AUCTION_HOUSE_SHOW")

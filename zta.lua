@@ -10,17 +10,17 @@
 
 -- CRITICAL: Initialize empty functions IMMEDIATELY to prevent XML errors
 -- These will be redefined later with actual functionality
-ZTA_Print           = ZTA_Print             or function() end
-ZTA_OnLoad          = ZTA_OnLoad            or function() end
-ZTA_OnClick         = ZTA_OnClick           or function() end
-ZTA_ShowTooltip     = ZTA_ShowTooltip       or function() end
-ZTA_SavePosition    = ZTA_SavePosition      or function() end
-ZTA_CancelScan      = ZTA_CancelScan        or function() end
-ZTA_StartScan       = ZTA_StartScan         or function() end
-ZTA_StopScan        = ZTA_StopScan          or function() end
-ZTA_RestorePosition = ZTA_RestorePosition   or function() end
-ZTA_OnDragStart     = ZTA_OnDragStart       or function() end
-ZTA_OnDragStop      = ZTA_OnDragStop        or function() end
+-- ZTA_Print           = ZTA_Print             or function() end
+-- ZTA_OnLoad          = ZTA_OnLoad            or function() end
+-- ZTA_OnClick         = ZTA_OnClick           or function() end
+-- ZTA_ShowTooltip     = ZTA_ShowTooltip       or function() end
+-- ZTA_SavePosition    = ZTA_SavePosition      or function() end
+-- ZTA_CancelScan      = ZTA_CancelScan        or function() end
+-- ZTA_StartScan       = ZTA_StartScan         or function() end
+-- ZTA_StopScan        = ZTA_StopScan          or function() end
+-- ZTA_RestorePosition = ZTA_RestorePosition   or function() end
+-- ZTA_OnDragStart     = ZTA_OnDragStart       or function() end
+-- ZTA_OnDragStop      = ZTA_OnDragStop        or function() end
 
 -- IMPORTANT: All XML-called functions must be defined FIRST before any variables
 -- This is required for WoW Vanilla addon loading order

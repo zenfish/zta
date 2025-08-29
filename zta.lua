@@ -265,13 +265,13 @@ end
 -- GLOBAL XML-CALLED FUNCTIONS (redefining the stubs)
 -- ============================================================================
 
-function ZTA_Print(msg)
+local function ZTA_Print(msg)
     if DEFAULT_CHAT_FRAME then
         DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00[ZTA]|r " .. msg)
     end
 end
 
-function ZTA_OnLoad()
+local function ZTA_OnLoad()
     -- Get the icon frame directly
     local icon = getglobal("ZTAIcon")
     if not icon then
@@ -293,7 +293,7 @@ function ZTA_OnLoad()
     ZTA_Print("ZTA loaded. Click the $ icon at an auctioneer to start scanning.")
 end
 
-function ZTA_OnClick()
+local function ZTA_OnClick()
     if scanInProgress then
         -- Currently scanning, this acts as cancel
         ZTA_Print("Auction scan cancelled.")
@@ -354,7 +354,7 @@ function ZTA_OnClick()
     end
 end
 
-function ZTA_ShowTooltip()
+local function ZTA_ShowTooltip()
     local icon = getglobal("ZTAIcon")
     if not icon then return end
     
@@ -393,7 +393,7 @@ function ZTA_ShowTooltip()
     GameTooltip:Show()
 end
 
-function ZTA_SavePosition()
+local function ZTA_SavePosition()
     local icon = getglobal("ZTAIcon")
     if icon and ZTA_DB then
         local point, _, _, x, y = icon:GetPoint()
@@ -401,14 +401,14 @@ function ZTA_SavePosition()
     end
 end
 
-function ZTA_OnDragStart()
+local function ZTA_OnDragStart()
     local icon = getglobal("ZTAIcon")
     if icon then
         icon:StartMoving()
     end
 end
 
-function ZTA_OnDragStop()
+local function ZTA_OnDragStop()
     local icon = getglobal("ZTAIcon")
     if icon then
         icon:StopMovingOrSizing()
@@ -422,7 +422,7 @@ end
 
 SLASH_ZTA1 = "/zta"
 
-function SlashCmdList.ZTA(msg)
+local function SlashCmdList.ZTA(msg)
     msg = string.lower(msg or "")
     
     if msg == "scan" then

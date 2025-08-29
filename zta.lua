@@ -34,6 +34,69 @@ local ICON_STATE_SCANNING = "X"
 -- Hook variables for original functions
 local originalCanSendAuctionQuery = nil
 
+-- UI Functions (must be defined before XML calls them)
+function ZTA_Print(msg)
+    if DEFAULT_CHAT_FRAME then
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00[ZTA]|r " .. msg)
+    end
+end
+
+function ZTA_ShowTooltip()
+    GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+    GameTooltip:ClearLines()
+    
+    if scanInProgress then
+        GameTooltip:AddLine("ZTA Scanner", 1, 1, 1)
+        GameTooltip:AddLine("Click to cancel scan", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(" ", 1, 1, 1)
+        GameTooltip:AddLine("Items scanned: " .. itemsScanned, 0.8, 0.8, 0.8)
+        if totalItems > 0 then
+            local percent = math.floor((itemsScanned / totalItems) * 100)
+            GameTooltip:AddLine("Progress: " .. percent .. "%", 0.8, 0.8, 0.8)
+        end
+    else
+        GameTooltip:AddLine("ZTA Scanner", 1, 1, 1)
+        if AuctionFrame and AuctionFrame:IsVisible() then
+            GameTooltip:AddLine("Click to start auction scan", 0.8, 0.8, 0.8)
+        else
+            GameTooltip:AddLine("Visit an auctioneer to scan", 0.8, 0.8, 0.8)
+        end
+        GameTooltip:AddLine("Drag to move", 0.6, 0.6, 0.6)
+        
+        -- Show scan history info
+        local historyCount = getn(ZTA_DB.scanHistory)
+        if historyCount > 0 then
+            GameTooltip:AddLine(" ", 1, 1, 1)
+            GameTooltip:AddLine("Scans in database: " .. historyCount, 0.6, 0.6, 0.6)
+        end
+    end
+    
+    GameTooltip:Show()
+end
+
+function ZTA_SavePosition()
+    local icon = getglobal("ZTAIcon")
+    if icon then
+        local point, _, _, x, y = icon:GetPoint()
+        ZTA_DB.iconPosition = { point = point, x = x, y = y }
+    end
+end
+
+function ZTA_OnClick()
+    if scanInProgress then
+        -- Currently scanning, this acts as cancel
+        ZTA_CancelScan()
+    else
+        -- Try to start a scan
+        ZTA_StartScan()
+    end
+end
+
+function ZTA_CancelScan()
+    ZTA_Print("Auction scan cancelled.")
+    ZTA_StopScan()
+end
+
 function ZTA_OnLoad()
     -- Initialize the addon  
     this:RegisterForDrag("LeftButton")
@@ -42,6 +105,9 @@ function ZTA_OnLoad()
     
     -- Set initial icon state
     getglobal(this:GetName().."Text"):SetText(ICON_STATE_IDLE)
+    
+    -- Restore position if available
+    ZTA_RestorePosition()
     
     ZTA_Print("ZTA loaded. Click the $ icon at an auctioneer to start scanning.")
 end
@@ -305,46 +371,6 @@ function ZTA_StopScan()
     getglobal("ZTAProgressFrame"):Hide()
 end
 
-function ZTA_ShowTooltip()
-    GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-    GameTooltip:ClearLines()
-    
-    if scanInProgress then
-        GameTooltip:AddLine("ZTA Scanner", 1, 1, 1)
-        GameTooltip:AddLine("Click to cancel scan", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("Items scanned: " .. itemsScanned, 0.8, 0.8, 0.8)
-        if totalItems > 0 then
-            local percent = math.floor((itemsScanned / totalItems) * 100)
-            GameTooltip:AddLine("Progress: " .. percent .. "%", 0.8, 0.8, 0.8)
-        end
-    else
-        GameTooltip:AddLine("ZTA Scanner", 1, 1, 1)
-        if AuctionFrame and AuctionFrame:IsVisible() then
-            GameTooltip:AddLine("Click to start auction scan", 0.8, 0.8, 0.8)
-        else
-            GameTooltip:AddLine("Visit an auctioneer to scan", 0.8, 0.8, 0.8)
-        end
-        
-        -- Show scan history info
-        local historyCount = getn(ZTA_DB.scanHistory)
-        if historyCount > 0 then
-            GameTooltip:AddLine(" ", 1, 1, 1)
-            GameTooltip:AddLine("Scans in database: " .. historyCount, 0.6, 0.6, 0.6)
-        end
-    end
-    
-    GameTooltip:Show()
-end
-
-function ZTA_SavePosition()
-    local icon = getglobal("ZTAIcon")
-    if icon then
-        local point, _, _, x, y = icon:GetPoint()
-        ZTA_DB.iconPosition = { point = point, x = x, y = y }
-    end
-end
-
 function ZTA_RestorePosition()
     if ZTA_DB.iconPosition then
         local pos = ZTA_DB.iconPosition
@@ -353,12 +379,6 @@ function ZTA_RestorePosition()
             icon:ClearAllPoints()
             icon:SetPoint(pos.point, UIParent, pos.point, pos.x, pos.y)
         end
-    end
-end
-
-function ZTA_Print(msg)
-    if DEFAULT_CHAT_FRAME then
-        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00[ZTA]|r " .. msg)
     end
 end
 

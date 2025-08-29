@@ -1,26 +1,20 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
 
   <!-- Moveable Circular Icon -->
-  <Button name="ZTAIcon" movable="true" enableMouse="true" parent="UIParent" hidden="false">
+  <Button name="ZTAIcon" movable="true" enableMouse="true" parent="UIParent" hidden="false" toplevel="true" frameStrata="HIGH">
     <Size>
       <AbsDimension x="40" y="40"/>
     </Size>
     <Anchors>
-      <Anchor point="CENTER" relativePoint="CENTER">
+      <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
         <Offset>
-          <AbsDimension x="0" y="100"/>
+          <AbsDimension x="-50" y="-150"/>
         </Offset>
       </Anchor>
     </Anchors>
-    <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-      <EdgeSize>
-        <AbsValue val="8"/>
-      </EdgeSize>
-      <TileSize>
-        <AbsValue val="8"/>
-      </TileSize>
+    <Backdrop bgFile="Interface\Buttons\UI-Panel-Button-Up" tile="false">
       <BackgroundInsets>
-        <AbsInset left="2" right="2" top="2" bottom="2"/>
+        <AbsInset left="0" right="0" top="0" bottom="0"/>
       </BackgroundInsets>
     </Backdrop>
     <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up"/>
@@ -42,7 +36,9 @@
         ZTA_OnClick();
       </OnClick>
       <OnDragStart>
-        this:StartMoving();
+        if arg1 == "LeftButton" then
+          this:StartMoving();
+        end
       </OnDragStart>
       <OnDragStop>
         this:StopMovingOrSizing();

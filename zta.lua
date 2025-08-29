@@ -13,13 +13,13 @@
 -- ============================================================================
 
 -- CRITICAL: Initialize empty functions IMMEDIATELY to prevent XML errors
-ZTA_Print           = ZTA_Print             or function() end
-ZTA_OnLoad          = ZTA_OnLoad            or function() end
-ZTA_OnClick         = ZTA_OnClick           or function() end
-ZTA_ShowTooltip     = ZTA_ShowTooltip       or function() end
-ZTA_SavePosition    = ZTA_SavePosition      or function() end
-ZTA_OnDragStart     = ZTA_OnDragStart       or function() end
-ZTA_OnDragStop      = ZTA_OnDragStop        or function() end
+local ZTA_Print           = ZTA_Print             or function() end
+local ZTA_OnLoad          = ZTA_OnLoad            or function() end
+local ZTA_OnClick         = ZTA_OnClick           or function() end
+local ZTA_ShowTooltip     = ZTA_ShowTooltip       or function() end
+local ZTA_SavePosition    = ZTA_SavePosition      or function() end
+local ZTA_OnDragStart     = ZTA_OnDragStart       or function() end
+local ZTA_OnDragStop      = ZTA_OnDragStop        or function() end
 
 -- ============================================================================
 -- SAVED VARIABLES (must be global)

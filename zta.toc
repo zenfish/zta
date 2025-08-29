@@ -1,0 +1,8 @@
+## Title: ZTA
+## Notes: A simple auction house scanner with moveable icon and progress tracking  
+## Interface: 11200
+## SavedVariables: ZTA_DB
+## Version: 1.0.0
+
+zta.lua
+zta.xml

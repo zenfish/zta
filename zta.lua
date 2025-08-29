@@ -8,36 +8,48 @@
     - Based on techniques from Auctioneer addon by Norganna's AddOns
 ]]
 
--- Addon namespace
-ZTA = {}
+-- IMPORTANT: All XML-called functions must be defined FIRST before any variables
+-- This is required for WoW Vanilla addon loading order
 
--- Local variables for scanning state
-local scanInProgress = false
-local scanStartTime = nil
-local currentPage = 0
-local totalPages = 0
-local itemsScanned = 0
-local totalItems = 0
-local scanData = {}
-
--- Saved variables (will be loaded from SavedVariables)
-ZTA_DB = ZTA_DB or {
-    iconPosition = { point = "CENTER", x = 0, y = 100 },
-    scanHistory = {}
-}
-
--- Icon states
-local ICON_STATE_IDLE = "$"
-local ICON_STATE_LOADING = "..."
-local ICON_STATE_SCANNING = "X"
-
--- Hook variables for original functions
-local originalCanSendAuctionQuery = nil
-
--- UI Functions (must be defined before XML calls them)
 function ZTA_Print(msg)
     if DEFAULT_CHAT_FRAME then
         DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00[ZTA]|r " .. msg)
+    end
+end
+
+function ZTA_RestorePosition()
+    if ZTA_DB and ZTA_DB.iconPosition then
+        local pos = ZTA_DB.iconPosition
+        local icon = getglobal("ZTAIcon")
+        if icon then
+            icon:ClearAllPoints()
+            icon:SetPoint(pos.point, UIParent, pos.point, pos.x, pos.y)
+        end
+    end
+end
+
+function ZTA_OnLoad()
+    -- Initialize the addon  
+    this:RegisterForDrag("LeftButton")
+    this:SetMovable(true)
+    this:EnableMouse(true)
+    
+    -- Set initial icon state
+    getglobal(this:GetName().."Text"):SetText("$")
+    
+    -- Restore position if available - delay it slightly to ensure UI is ready
+    ZTA_RestorePosition()
+    
+    ZTA_Print("ZTA loaded. Click the $ icon at an auctioneer to start scanning.")
+end
+
+function ZTA_OnClick()
+    if scanInProgress then
+        -- Currently scanning, this acts as cancel
+        ZTA_CancelScan()
+    else
+        -- Try to start a scan
+        ZTA_StartScan()
     end
 end
 
@@ -64,7 +76,10 @@ function ZTA_ShowTooltip()
         GameTooltip:AddLine("Drag to move", 0.6, 0.6, 0.6)
         
         -- Show scan history info
-        local historyCount = getn(ZTA_DB.scanHistory)
+        local historyCount = 0
+        if ZTA_DB and ZTA_DB.scanHistory then
+            historyCount = getn(ZTA_DB.scanHistory)
+        end
         if historyCount > 0 then
             GameTooltip:AddLine(" ", 1, 1, 1)
             GameTooltip:AddLine("Scans in database: " .. historyCount, 0.6, 0.6, 0.6)
@@ -76,11 +91,93 @@ end
 
 function ZTA_SavePosition()
     local icon = getglobal("ZTAIcon")
-    if icon then
+    if icon and ZTA_DB then
         local point, _, _, x, y = icon:GetPoint()
         ZTA_DB.iconPosition = { point = point, x = x, y = y }
     end
 end
+
+function ZTA_CancelScan()
+    ZTA_Print("Auction scan cancelled.")
+    ZTA_StopScan()
+end
+
+function ZTA_StartScan()
+    -- Check if we can start a scan
+    if not AuctionFrame or not AuctionFrame:IsVisible() then
+        ZTA_Print("You must be at an auctioneer to start scanning.")
+        return
+    end
+    
+    if not CanSendAuctionQuery or not CanSendAuctionQuery() then
+        ZTA_Print("Cannot query auction house at this time. Please wait and try again.")
+        return
+    end
+    
+    -- Initialize scanning
+    scanInProgress = true
+    scanStartTime = GetTime()
+    currentPage = 0
+    totalPages = 0
+    itemsScanned = 0
+    totalItems = 0
+    scanData = {}
+    
+    -- Update icon state
+    getglobal("ZTAIconText"):SetText("...")
+    
+    -- Show progress window
+    getglobal("ZTAProgressFrame"):Show()
+    
+    ZTA_Print("Starting auction house scan...")
+    
+    -- Start the scan with a full query (getAll = true)
+    QueryAuctionItems("", "", "", nil, nil, nil, 0, nil, nil)
+    getglobal("ZTAIconText"):SetText("X")
+end
+
+function ZTA_StopScan()
+    scanInProgress = false
+    scanStartTime = nil
+    currentPage = 0
+    totalPages = 0
+    
+    -- Reset icon
+    getglobal("ZTAIconText"):SetText("$")
+    
+    -- Hide progress window  
+    local progressFrame = getglobal("ZTAProgressFrame")
+    if progressFrame then
+        progressFrame:Hide()
+    end
+end
+
+-- NOW define variables after all XML functions are declared
+-- Addon namespace
+ZTA = {}
+
+-- Local variables for scanning state
+local scanInProgress = false
+local scanStartTime = nil
+local currentPage = 0
+local totalPages = 0
+local itemsScanned = 0
+local totalItems = 0
+local scanData = {}
+
+-- Saved variables (will be loaded from SavedVariables)
+ZTA_DB = ZTA_DB or {
+    iconPosition = { point = "TOPRIGHT", x = -50, y = -150 },
+    scanHistory = {}
+}
+
+-- Icon states
+local ICON_STATE_IDLE = "$"
+local ICON_STATE_LOADING = "..."
+local ICON_STATE_SCANNING = "X"
+
+-- Hook variables for original functions
+local originalCanSendAuctionQuery = nil
 
 function ZTA_OnClick()
     if scanInProgress then

@@ -8,6 +8,18 @@
     - Based on techniques from Auctioneer addon by Norganna's AddOns
 ]]
 
+-- CRITICAL: Initialize empty functions IMMEDIATELY to prevent XML errors
+-- These will be redefined later with actual functionality
+ZTA_Print = ZTA_Print or function() end
+ZTA_OnLoad = ZTA_OnLoad or function() end
+ZTA_OnClick = ZTA_OnClick or function() end
+ZTA_ShowTooltip = ZTA_ShowTooltip or function() end
+ZTA_SavePosition = ZTA_SavePosition or function() end
+ZTA_CancelScan = ZTA_CancelScan or function() end
+ZTA_StartScan = ZTA_StartScan or function() end
+ZTA_StopScan = ZTA_StopScan or function() end
+ZTA_RestorePosition = ZTA_RestorePosition or function() end
+
 -- IMPORTANT: All XML-called functions must be defined FIRST before any variables
 -- This is required for WoW Vanilla addon loading order
 
@@ -34,10 +46,26 @@ function ZTA_OnLoad()
     this:SetMovable(true)
     this:EnableMouse(true)
     
-    -- Set initial icon state
-    getglobal(this:GetName().."Text"):SetText("$")
+    -- Debug: Show what frame this is
+    local frameName = this:GetName() or "Unknown"
     
-    -- Restore position if available - delay it slightly to ensure UI is ready
+    -- Set initial icon state - try multiple ways to ensure it works
+    local buttonText = getglobal(frameName.."Text")
+    if buttonText then
+        buttonText:SetText("$")
+        ZTA_Print("Set text via " .. frameName .. "Text")
+    else
+        ZTA_Print("Could not find " .. frameName .. "Text")
+    end
+    
+    -- Alternative method
+    local iconText = getglobal("ZTAIconText")  
+    if iconText then
+        iconText:SetText("$")
+        ZTA_Print("Set text via ZTAIconText")
+    end
+    
+    -- Restore position if available
     ZTA_RestorePosition()
     
     ZTA_Print("ZTA loaded. Click the $ icon at an auctioneer to start scanning.")

@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
 
   <!-- Moveable Circular Icon -->
-  <Button name="ZTAIcon" movable="true" enableMouse="true" parent="UIParent" hidden="false" toplevel="true" frameStrata="HIGH">
+  <Button name="ZTAIcon" movable="true" enableMouse="true" parent="UIParent" hidden="false" toplevel="true" frameStrata="HIGH" registerForDrag="LeftButton">
     <Size>
       <AbsDimension x="40" y="40"/>
     </Size>
@@ -20,7 +20,7 @@
     <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up"/>
     <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down"/>
     <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD"/>
-    <ButtonText name="$parentText" inherits="GameFontNormal">
+    <ButtonText name="$parentText" inherits="GameFontNormal" text="$">
       <Size>
         <AbsDimension x="36" y="36"/>
       </Size>
@@ -36,9 +36,7 @@
         ZTA_OnClick();
       </OnClick>
       <OnDragStart>
-        if arg1 == "LeftButton" then
-          this:StartMoving();
-        end
+        this:StartMoving();
       </OnDragStart>
       <OnDragStop>
         this:StopMovingOrSizing();

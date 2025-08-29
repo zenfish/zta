@@ -1,3 +1,13 @@
+-- CRITICAL: Initialize empty functions FIRST to prevent XML errors
+local ZTA_Print           = function() end
+local ZTA_OnLoad          = function() end
+local ZTA_OnClick         = function() end
+local ZTA_ShowTooltip     = function() end
+local ZTA_SavePosition    = function() end
+local ZTA_OnDragStart     = function() end
+local ZTA_OnDragStop      = function() end
+local ZTA_CancelScan      = function() end
+
 --[[
     ZTA - A lightweight auction house scanner for WoW Vanilla
     Features:
